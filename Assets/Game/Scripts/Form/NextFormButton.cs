@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Zenject;
 
 [RequireComponent(typeof(UIDocument))]
 public class NextFormButton : MonoBehaviour
 {
-    [Inject] private FormElements _formElements;
+    private FormElements _formElements;
 
     [SerializeField] private float _transitionDuration;
 
@@ -16,6 +15,7 @@ public class NextFormButton : MonoBehaviour
 
     private void Start()
     {
+        _formElements = FormElements.Instance;
         var uiDocument = GetComponent<UIDocument>();
 
         _formElements.NextPageButton.RegisterCallback<ClickEvent>(NextPage);
@@ -81,6 +81,12 @@ public class NextFormButton : MonoBehaviour
         _formElements.CurrentColoringItem.LoadColors();
         _formElements.CurrentColoringItem.Element.style.display = DisplayStyle.Flex;
         _formElements.Labels[1].style.display = DisplayStyle.Flex;
+        _formElements.ScaledForm.style.display = DisplayStyle.Flex;
+
+        for (int i = 0; i <= _formElements.LastForm.FormButtonsLayers.Count; i++)
+        {
+            SetFormsColors(_formElements.ScaledForm.ElementAt(0), _formElements.LastForm, i);
+        }
 
         StartTransitions(previousColoringItem);
     }
@@ -92,13 +98,15 @@ public class NextFormButton : MonoBehaviour
         _formElements.Labels[1].style.transitionDuration = durationSettings;
         _formElements.CurrentColoringItem.Element.style.transitionDuration = durationSettings;
         previousColoringItem.Element.style.transitionDuration = durationSettings;
+        _formElements.ScaledForm.style.transitionDuration = durationSettings;
 
         StartCoroutine(Show(_formElements.CurrentColoringItem.Element));
         StartCoroutine(Show(_formElements.Labels[1]));
+        StartCoroutine(Show(_formElements.ScaledForm));
 
         StartCoroutine(Hide(_formElements.Labels[0]));
 
-        StartCoroutine(Scale(previousColoringItem.Element));
+        StartCoroutine(Hide(previousColoringItem.Element));
     }
 
     private IEnumerator Show(VisualElement element)

@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Zenject;
 
 [RequireComponent(typeof(UIDocument))]
 public class TeamNameInputHandler : MonoBehaviour
 {
-    [Inject] private FormElements _formElements;
+    private FormElements _formElements;
 
     private Color _normalNextButtonColor;
 
     private void Start()
     {
+        _formElements = FormElements.Instance;
         var uiDocument = GetComponent<UIDocument>();
 
         _formElements.TeamTextField.RegisterCallback<InputEvent>(OnInput);

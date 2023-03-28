@@ -4,20 +4,24 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.UI;
-using Zenject;
 
 [RequireComponent(typeof(UIDocument))]
 public class ColorChooser : MonoBehaviour
 {
-    [Inject] private FormElements _formElements;
+    private FormElements _formElements;
 
     [SerializeField] private Sprite _inactiveSprite;
     [SerializeField] private Sprite _activeSprite;
 
     private VisualElement _currentColorLayer;
+    private VisualElement _currentPaletteButton;
+
+    private float _choosedColorBorderWidth = 1.2f;
 
     private void Start()
     {
+        _formElements = FormElements.Instance;
+
         var uiDocument = GetComponent<UIDocument>();
 
         var formColorButtons = _formElements.LayerButtons;
@@ -32,6 +36,7 @@ public class ColorChooser : MonoBehaviour
 
         _currentColorLayer = formColorButtons[formColorButtons.Count-1];
         _currentColorLayer.Q().style.backgroundImage = new StyleBackground(_activeSprite);
+        SetPaletteButtonBorder(); 
     }
 
     private void SetLayerButton(ClickEvent e)
@@ -39,6 +44,7 @@ public class ColorChooser : MonoBehaviour
         _currentColorLayer.Q().style.backgroundImage = new StyleBackground(_inactiveSprite);
         _currentColorLayer = e.currentTarget as VisualElement;
         _currentColorLayer.Q().style.backgroundImage = new StyleBackground(_activeSprite);
+        SetPaletteButtonBorder();
     }
 
     private void ChangeColor(ClickEvent e)
@@ -48,5 +54,29 @@ public class ColorChooser : MonoBehaviour
 
         _formElements.CurrentColoringItem.SetColor(_currentColorLayer, color);
         _currentColorLayer.Q().ElementAt(0).Q().style.unityBackgroundImageTintColor = color;
+        SetPaletteButtonBorder();
+    }
+
+    public void SetPaletteButtonBorder()
+    {
+        foreach (var button in _formElements.ColorButtons)
+        {
+            var layerColor = _currentColorLayer.Q().ElementAt(0).Q().style.unityBackgroundImageTintColor.value;
+            var paletteColor = button.Q().resolvedStyle.backgroundColor;
+            if (layerColor == paletteColor)
+            {
+                if(_currentPaletteButton != null) ChangeWidth(0);
+                _currentPaletteButton = button;
+                ChangeWidth(_choosedColorBorderWidth);
+            }
+        }
+    }
+
+    private void ChangeWidth(float width)
+    {
+        _currentPaletteButton.Q().style.borderTopWidth = width;
+        _currentPaletteButton.Q().style.borderBottomWidth = width;
+        _currentPaletteButton.Q().style.borderLeftWidth = width;
+        _currentPaletteButton.Q().style.borderRightWidth = width;
     }
 }

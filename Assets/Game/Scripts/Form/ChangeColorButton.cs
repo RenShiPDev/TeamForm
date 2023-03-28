@@ -4,17 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Zenject;
 
 [RequireComponent(typeof(UIDocument))]
 public class ChangeColorButton : MonoBehaviour
 {
-    [Inject] private FormElements _formElements;
+    private FormElements _formElements;
 
     private VisualElement _changeColorsButton;
 
     private void Start()
     {
+        _formElements = FormElements.Instance;
+
         var uiDocument = GetComponent<UIDocument>();
         
         _changeColorsButton = uiDocument.rootVisualElement.Q<VisualElement>("ChangeColor");

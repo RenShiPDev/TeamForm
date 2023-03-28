@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Zenject;
 
 [RequireComponent(typeof(UIDocument))]
 public class FormChooser : MonoBehaviour
 {
-    [Inject] private FormElements _formElements;
+    private FormElements _formElements;
     private void Start()
     {
+        _formElements = FormElements.Instance;
+
         var uiDocument = GetComponent<UIDocument>();
 
         _formElements.NextFormButton.RegisterCallback<ClickEvent>(NextForm);
@@ -42,5 +43,7 @@ public class FormChooser : MonoBehaviour
 
         _formElements.CurrentColoringItem.ChangeLayerButtonsColor();
         _formElements.CurrentColoringItem.Element.style.display = DisplayStyle.Flex;
+
+        _formElements.UIGameObject.GetComponent<ColorChooser>().SetPaletteButtonBorder();
     }
 }

@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Zenject;
 
 public class ColoringItem
 {
@@ -60,6 +59,20 @@ public class ColoringItem
 
 public class FormElements : MonoBehaviour
 {
+    private static FormElements _instance;
+    public static FormElements Instance { get { return _instance; } }
+    private void Awake()
+    {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
+        }
+    }
+
     public List<VisualElement> Panels = new List<VisualElement>();
     public List<VisualElement> HidingElements = new List<VisualElement>();
 
@@ -82,6 +95,8 @@ public class FormElements : MonoBehaviour
     public ColoringItem LastForm;
     public ColoringItem LastLogo;
 
+    public VisualElement ScaledForm;
+
     public VisualElement FinalForm;
     public VisualElement FinalLogo;
 
@@ -90,5 +105,7 @@ public class FormElements : MonoBehaviour
     public ColoringItem CurrentColoringItem;
 
     public Color RedColor;
+
+    public GameObject UIGameObject;
 }
 

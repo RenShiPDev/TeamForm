@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Zenject;
 
-public class FormElementsInstaller : MonoInstaller
+public class FormElementsInstaller : MonoBehaviour
 {
     [SerializeField] private UIDocument _UIPrefab;
     [SerializeField] private List<string> _notHidingElements = new List<string>();
@@ -13,13 +12,12 @@ public class FormElementsInstaller : MonoInstaller
     private UIDocument _uiDocument;
     private int _formsCount;
 
-    public override void InstallBindings()
+    public void Start()
     {
-        var formElements = Container.InstantiateComponentOnNewGameObject<FormElements>();
+        FormElements formElements = FormElements.Instance;
+        _uiDocument = Instantiate(_UIPrefab);
 
-        Container.Bind<FormElements>().FromInstance(formElements);
-        _uiDocument = Container.InstantiatePrefabForComponent<UIDocument>(_UIPrefab);
-
+        formElements.UIGameObject = _uiDocument.gameObject;
 
         formElements.ColorButtons = GetColorButtons();
         formElements.FormColorButtons = GetFormElements("FormColors", true);
@@ -36,9 +34,11 @@ public class FormElementsInstaller : MonoInstaller
         formElements.Labels = GetLabels();
         formElements.HidingElements = GetHidingElements(_notHidingElements);
         formElements.Panels = GetPanels();
-
+        
         formElements.FinalForm = _uiDocument.rootVisualElement.Q<VisualElement>("FinalForm").ElementAt(0);
         formElements.FinalLogo = _uiDocument.rootVisualElement.Q<VisualElement>("FinalLogo").ElementAt(0);
+        formElements.ScaledForm = _uiDocument.rootVisualElement.Q<VisualElement>("ScaledForm");
+        formElements.ScaledForm.style.display = DisplayStyle.None;
 
         formElements.TeamTextField = _uiDocument.rootVisualElement.Q<TextField>("TeamTextField");
 
@@ -67,7 +67,7 @@ public class FormElementsInstaller : MonoInstaller
         var formElemets = _uiDocument.rootVisualElement.Q<VisualElement>(parentName).Children();
         foreach (var element in formElemets)
         {
-            if(getChildren)
+            if (getChildren)
                 elements.Add(element.ElementAt(0));
             else
                 elements.Add(element);
@@ -120,7 +120,7 @@ public class FormElementsInstaller : MonoInstaller
     private List<VisualElement> GetPanels()
     {
         var panels = new List<VisualElement>();
-        panels.Add(_uiDocument.rootVisualElement.Q<VisualElement>("Panel")); 
+        panels.Add(_uiDocument.rootVisualElement.Q<VisualElement>("Panel"));
         panels.Add(_uiDocument.rootVisualElement.Q<VisualElement>("TeamNamePanel"));
         return panels;
     }
