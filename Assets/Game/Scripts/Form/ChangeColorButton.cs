@@ -40,6 +40,7 @@ public class ChangeColorButton : MonoBehaviour
     {
         SetRandomColors(_formElements.CurrentColoringItem);
         _formElements.CurrentColoringItem.ChangeLayerButtonsColor();
+        _formElements.UIGameObject.GetComponent<ColorChooser>().SetPaletteButtonBorder();
     }
 
     private void SetRandomColors(ColoringItem form)
